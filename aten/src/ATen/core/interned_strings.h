@@ -226,6 +226,7 @@ namespace c10 {
   _(aten, has_torch_function)        \
   _(aten, is_autocast_enabled)       \
   _(aten, is_autocast_cpu_enabled)   \
+  _(aten, is_autocast_mps_enabled)   \
   _(aten, is_autocast_xla_enabled)   \
   _(aten, get_autocast_dtype)        \
   FORALL_ATEN_BASE_SYMBOLS(_)        \
