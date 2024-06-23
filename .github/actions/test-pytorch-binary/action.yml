@@ -36,7 +36,7 @@ runs:
           "${DOCKER_IMAGE}"
         )
 
-        if [[ "${GPU_ARCH_TYPE}" != "rocm" && "${BUILD_ENVIRONMENT}" != "linux-aarch64-binary-manywheel" && "${BUILD_ENVIRONMENT}" != "linux-s390x-binary-manywheel" ]]; then
+        if [[ "${GPU_ARCH_TYPE}" != "rocm" && "${BUILD_ENVIRONMENT}" != "linux-aarch64-binary-manywheel" && "${BUILD_ENVIRONMENT}" != "linux-s390x-binary-manywheel" && "${GPU_ARCH_TYPE}" != "xpu" ]]; then
           # Propagate download.pytorch.org IP to container. This is only needed on Linux non aarch64 runner
           grep download.pytorch.org /etc/hosts | docker exec -i "${container_name}" bash -c "/bin/cat >> /etc/hosts"
         fi
@@ -45,6 +45,10 @@ runs:
         # Generate test script
         docker exec -t -w "${PYTORCH_ROOT}" -e OUTPUT_SCRIPT="/run.sh" "${container_name}" bash -c "bash .circleci/scripts/binary_linux_test.sh"
         docker exec -t "${container_name}" bash -c "source ${BINARY_ENV_FILE} && bash -x /run.sh"
+        # Stop the container before exit for xpu runners 
+        if [[ "${GPU_ARCH_TYPE}" == "xpu" ]]; then
+          docker stop ${container_name}
+        fi
 
     - name: Cleanup docker
       if: always() && env.BUILD_ENVIRONMENT == 'linux-s390x-binary-manywheel'
