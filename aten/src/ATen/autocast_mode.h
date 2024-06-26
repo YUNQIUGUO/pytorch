@@ -7,6 +7,8 @@
 
 #include <c10/core/impl/LocalDispatchKeySet.h>
 #include <c10/util/intrusive_ptr.h>
+#include "c10/core/DeviceType.h"
+#include "c10/core/DispatchKey.h"
 
 namespace at::autocast {
 
@@ -170,7 +172,7 @@ inline DispatchKey get_autocast_dispatch_key_from_device_type(
       return DispatchKey::AutocastXLA;
     case c10::DeviceType::PrivateUse1:
       return DispatchKey::AutocastPrivateUse1;
-    case DeviceType::MPS:
+    case c10::DeviceType::MPS:
       return DispatchKey::AutocastMPS;
     default:
       throw std::runtime_error(
@@ -182,7 +184,7 @@ inline bool is_autocast_available(c10::DeviceType device_type) {
   if (device_type == at::kCPU || device_type == at::kCUDA ||
       device_type == at::kXPU || device_type == at::kIPU ||
       device_type == at::kHPU || device_type == at::kXLA ||
-      device_type == at::kPrivateUse1) {
+      device_type == at::kPrivateUse1|| device_type == at::kMPS) {
     return true;
   } else {
     return false;
@@ -767,8 +769,6 @@ copy pasted in from VariableTypeEverything.cpp with appropriate substitutions.
     &ATEN_FN2(OP, OVERLOAD)>::type::call);
 
 
-} // namespace autocast
-} // namespace at
 // Op lists for different policies.
 // To make sure other backends can reuse the policy op list.
 #define AT_FORALL_LOWER_PRECISION_FP(_)  \
