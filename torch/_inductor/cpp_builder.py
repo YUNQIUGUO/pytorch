@@ -320,12 +320,8 @@ def _get_optimization_cflags() -> List[str]:
         if not config.cpp.enable_floating_point_contract_flag:
             cflags.append("ffp-contract=off")
 
-        if sys.platform == "darwin":
-            # Per https://mac.r-project.org/openmp/ right way to pass `openmp` flags to MacOS is via `-Xclang`
+        if not sys.platform == "darwin":
             # Also, `-march=native` is unrecognized option on M1
-            cflags.append("Xclang")
-            cflags.append("fopenmp")
-        else:
             if platform.machine() == "ppc64le":
                 cflags.append("mcpu=native")
             else:
@@ -606,6 +602,10 @@ def _get_openmp_args(cpp_compiler):
     libs: List[str] = []
     passthough_args: List[str] = []
     if _IS_MACOS:
+        # Per https://mac.r-project.org/openmp/ right way to pass `openmp` flags to MacOS is via `-Xclang`        
+        cflags.append("Xclang")
+        cflags.append("fopenmp")
+
         from torch._inductor.codecache import (
             homebrew_libomp,
             is_conda_llvm_openmp_installed,
