@@ -2954,12 +2954,12 @@ class HalideCodeCache(CppPythonBindingsCodeCache):
     def config_hash(cls):
         from torch._inductor.cpp_builder import CppBuilder, CppOptions
 
-        dummy_builder = CppBuilder(
+        command_gen = CppBuilder(
             name="O",
             sources="I",
             BuildOption=CppOptions(compile_only=False),
         )
-        command_line = dummy_builder.get_command_line()
+        command_line = command_gen.get_command_line()
         return sha256_hash(
             "\n".join(
                 [
