@@ -321,7 +321,8 @@ def _get_optimization_cflags() -> List[str]:
             cflags.append("ffp-contract=off")
 
         if not sys.platform == "darwin":
-            # Also, `-march=native` is unrecognized option on M1
+            # https://stackoverflow.com/questions/65966969/why-does-march-native-not-work-on-apple-m1
+            # `-march=native` is unrecognized option on M1
             if platform.machine() == "ppc64le":
                 cflags.append("mcpu=native")
             else:
@@ -602,7 +603,7 @@ def _get_openmp_args(cpp_compiler):
     libs: List[str] = []
     passthough_args: List[str] = []
     if _IS_MACOS:
-        # Per https://mac.r-project.org/openmp/ right way to pass `openmp` flags to MacOS is via `-Xclang`        
+        # Per https://mac.r-project.org/openmp/ right way to pass `openmp` flags to MacOS is via `-Xclang`
         cflags.append("Xclang")
         cflags.append("fopenmp")
 
